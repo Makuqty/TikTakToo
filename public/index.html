@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Tic-Tac-Toe Multiplayer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login/Register Screen -->
+        <div id="authScreen" class="screen active">
+            <div class="auth-container">
+                <h1>Tic-Tac-Toe</h1>
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="showLogin()">Login</button>
+                    <button class="tab-btn" onclick="showRegister()">Register</button>
+                </div>
+                
+                <form id="loginForm" class="auth-form">
+                    <input type="text" id="loginUsername" placeholder="Username" required autocomplete="username" aria-label="Username">
+                    <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password" aria-label="Password">
+                    <button type="submit" aria-label="Login to game">Login</button>
+                </form>
+                
+                <form id="registerForm" class="auth-form hidden">
+                    <input type="text" id="registerUsername" placeholder="Username" required autocomplete="username" aria-label="Choose username">
+                    <input type="password" id="registerPassword" placeholder="Password" required autocomplete="new-password" aria-label="Choose password">
+                    <button type="submit" aria-label="Create new account">Register</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lobby Screen -->
+        <div id="lobbyScreen" class="screen">
+            <div class="lobby-container">
+                <header class="lobby-header">
+                    <h1>Game Lobby</h1>
+                    <div class="user-info">
+                        <button id="userProfile" onclick="showProfile()"></button>
+                        <button onclick="logout()">Logout</button>
+                    </div>
+                </header>
+                
+                <div class="lobby-content">
+                    <div class="lobby-section">
+                        <h2>Quick Match</h2>
+                        <button id="findMatchBtn" class="find-match-btn" onclick="findMatch()">Find Match</button>
+                    </div>
+                    
+                    <div class="lobby-section">
+                        <h2>Online Players</h2>
+                        <div id="onlinePlayersList" class="players-list"></div>
+                    </div>
+                    
+                    <div class="lobby-section">
+                        <h2>Leaderboard</h2>
+                        <div id="leaderboard" class="leaderboard"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div class="game-container">
+                <div class="game-header">
+                    <div class="game-info">
+                        <span id="gameStatus"></span>
+                    </div>
+                    <div class="game-actions">
+                        <button id="rematchBtn" onclick="requestRematch()" style="display:none">Rematch</button>
+                        <button onclick="leaveGame()">Leave Game</button>
+                    </div>
+                </div>
+                
+                <div class="game-board-container">
+                    <div id="gameBoard" class="game-board"></div>
+                    
+                    <div class="chat-container">
+                        <div id="chatMessages" class="chat-messages"></div>
+                        <div class="chat-input">
+                            <input type="text" id="messageInput" placeholder="Type a message..." aria-label="Chat message" autocomplete="off">
+                            <button onclick="toggleEmotePicker()" class="emote-btn" aria-label="Add emote">😀</button>
+                            <button onclick="sendMessage()" aria-label="Send message">Send</button>
+                        </div>
+                        <div id="emotePicker" class="emote-picker hidden">
+                            <div class="emote-grid">
+                                <span onclick="addEmote('😀')">😀</span>
+                                <span onclick="addEmote('😂')">😂</span>
+                                <span onclick="addEmote('😎')">😎</span>
+                                <span onclick="addEmote('😍')">😍</span>
+                                <span onclick="addEmote('🤔')">🤔</span>
+                                <span onclick="addEmote('😭')">😭</span>
+                                <span onclick="addEmote('😡')">😡</span>
+                                <span onclick="addEmote('👍')">👍</span>
+                                <span onclick="addEmote('👎')">👎</span>
+                                <span onclick="addEmote('❤️')">❤️</span>
+                                <span onclick="addEmote('🔥')">🔥</span>
+                                <span onclick="addEmote('⭐')">⭐</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenge Modal -->
+        <div id="challengeModal" class="modal">
+            <div class="modal-content">
+                <h3>Choose Your Symbol</h3>
+                <div class="symbol-choice">
+                    <button onclick="sendChallenge('X')" aria-label="Choose X symbol">X</button>
+                    <button onclick="sendChallenge('O')" aria-label="Choose O symbol">O</button>
+                    <button onclick="sendChallenge('⭐')" aria-label="Choose star symbol">⭐</button>
+                    <button onclick="sendChallenge('🔥')" aria-label="Choose fire symbol">🔥</button>
+                    <button onclick="sendChallenge('⚡')" aria-label="Choose lightning symbol">⚡</button>
+                    <button onclick="sendChallenge('💎')" aria-label="Choose diamond symbol">💎</button>
+                    <button onclick="sendChallenge('fun')" aria-label="Choose fun symbol" class="image-symbol"><img src="images/fun.jpg" alt="Fun"></button>
+                    <button onclick="sendChallenge('giga')" aria-label="Choose giga symbol" class="image-symbol"><img src="images/giga.jpg" alt="Giga"></button>
+                    <button onclick="sendChallenge('kupal')" aria-label="Choose kupal symbol" class="image-symbol"><img src="images/kupal.jpg" alt="Kupal"></button>
+                    <button onclick="sendChallenge('lol')" aria-label="Choose lol symbol" class="image-symbol"><img src="images/lol.jpg" alt="Lol"></button>
+                    <button onclick="sendChallenge('suck')" aria-label="Choose suck symbol" class="image-symbol"><img src="images/suck.jpg" alt="Suck"></button>
+                    <button onclick="sendChallenge('troll')" aria-label="Choose troll symbol" class="image-symbol"><img src="images/troll.jpg" alt="Troll"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatar Selection Modal -->
+        <div id="avatarModal" class="modal">
+            <div class="modal-content">
+                <h3>Choose Avatar</h3>
+                <div class="avatar-grid">
+                    <div class="avatar-option" onclick="selectAvatar('🎮')" data-avatar="🎮">🎮</div>
+                    <div class="avatar-option" onclick="selectAvatar('🎯')" data-avatar="🎯">🎯</div>
+                    <div class="avatar-option" onclick="selectAvatar('🎲')" data-avatar="🎲">🎲</div>
+                    <div class="avatar-option" onclick="selectAvatar('🏆')" data-avatar="🏆">🏆</div>
+                    <div class="avatar-option" onclick="selectAvatar('⭐')" data-avatar="⭐">⭐</div>
+                    <div class="avatar-option" onclick="selectAvatar('🔥')" data-avatar="🔥">🔥</div>
+                    <div class="avatar-option" onclick="selectAvatar('⚡')" data-avatar="⚡">⚡</div>
+                    <div class="avatar-option" onclick="selectAvatar('🎪')" data-avatar="🎪">🎪</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rematch Request Modal -->
+        <div id="rematchRequestModal" class="modal">
+            <div class="modal-content">
+                <h3 id="rematchRequestText"></h3>
+                <div class="challenge-actions">
+                    <button onclick="respondToRematch(true)" aria-label="Accept rematch">Accept</button>
+                    <button onclick="respondToRematch(false)" aria-label="Decline rematch">Decline</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenge Received Modal -->
+        <div id="challengeReceivedModal" class="modal">
+            <div class="modal-content">
+                <h3 id="challengeText"></h3>
+                <div id="challengeSymbolChoice" class="symbol-choice" style="display:none;">
+                    <button onclick="acceptChallengeWithSymbol('X')" aria-label="Choose X symbol">X</button>
+                    <button onclick="acceptChallengeWithSymbol('O')" aria-label="Choose O symbol">O</button>
+                    <button onclick="acceptChallengeWithSymbol('⭐')" aria-label="Choose star symbol">⭐</button>
+                    <button onclick="acceptChallengeWithSymbol('🔥')" aria-label="Choose fire symbol">🔥</button>
+                    <button onclick="acceptChallengeWithSymbol('⚡')" aria-label="Choose lightning symbol">⚡</button>
+                    <button onclick="acceptChallengeWithSymbol('💎')" aria-label="Choose diamond symbol">💎</button>
+                    <button onclick="acceptChallengeWithSymbol('fun')" aria-label="Choose fun symbol" class="image-symbol"><img src="images/fun.jpg" alt="Fun"></button>
+                    <button onclick="acceptChallengeWithSymbol('giga')" aria-label="Choose giga symbol" class="image-symbol"><img src="images/giga.jpg" alt="Giga"></button>
+                    <button onclick="acceptChallengeWithSymbol('kupal')" aria-label="Choose kupal symbol" class="image-symbol"><img src="images/kupal.jpg" alt="Kupal"></button>
+                    <button onclick="acceptChallengeWithSymbol('lol')" aria-label="Choose lol symbol" class="image-symbol"><img src="images/lol.jpg" alt="Lol"></button>
+                    <button onclick="acceptChallengeWithSymbol('suck')" aria-label="Choose suck symbol" class="image-symbol"><img src="images/suck.jpg" alt="Suck"></button>
+                    <button onclick="acceptChallengeWithSymbol('troll')" aria-label="Choose troll symbol" class="image-symbol"><img src="images/troll.jpg" alt="Troll"></button>
+                </div>
+                <div id="challengeInitialActions" class="challenge-actions">
+                    <button onclick="showSymbolChoice()" aria-label="Accept challenge">Accept</button>
+                    <button onclick="respondToChallenge(false)" aria-label="Decline challenge">Decline</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match Symbol Selection Modal -->
+        <div id="matchSymbolModal" class="modal">
+            <div class="modal-content">
+                <h3 id="matchText"></h3>
+                <div class="symbol-choice" style="display:grid;">
+                    <button onclick="chooseMatchSymbol('X')" aria-label="Choose X symbol">X</button>
+                    <button onclick="chooseMatchSymbol('O')" aria-label="Choose O symbol">O</button>
+                    <button onclick="chooseMatchSymbol('⭐')" aria-label="Choose star symbol">⭐</button>
+                    <button onclick="chooseMatchSymbol('🔥')" aria-label="Choose fire symbol">🔥</button>
+                    <button onclick="chooseMatchSymbol('⚡')" aria-label="Choose lightning symbol">⚡</button>
+                    <button onclick="chooseMatchSymbol('💎')" aria-label="Choose diamond symbol">💎</button>
+                    <button onclick="chooseMatchSymbol('fun')" aria-label="Choose fun symbol" class="image-symbol"><img src="images/fun.jpg" alt="Fun"></button>
+                    <button onclick="chooseMatchSymbol('giga')" aria-label="Choose giga symbol" class="image-symbol"><img src="images/giga.jpg" alt="Giga"></button>
+                    <button onclick="chooseMatchSymbol('kupal')" aria-label="Choose kupal symbol" class="image-symbol"><img src="images/kupal.jpg" alt="Kupal"></button>
+                    <button onclick="chooseMatchSymbol('lol')" aria-label="Choose lol symbol" class="image-symbol"><img src="images/lol.jpg" alt="Lol"></button>
+                    <button onclick="chooseMatchSymbol('suck')" aria-label="Choose suck symbol" class="image-symbol"><img src="images/suck.jpg" alt="Suck"></button>
+                    <button onclick="chooseMatchSymbol('troll')" aria-label="Choose troll symbol" class="image-symbol"><img src="images/troll.jpg" alt="Troll"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Modal -->
+        <div id="profileModal" class="modal">
+            <div class="modal-content profile-modal">
+                <div class="modal-header">
+                    <h3>Player Profile</h3>
+                    <button class="close-btn" onclick="closeProfile()">&times;</button>
+                </div>
+                <div class="profile-content">
+                    <div class="profile-avatar">
+                        <div id="profileAvatar" class="avatar"></div>
+                        <button onclick="changeAvatar()">Change Avatar</button>
+                    </div>
+                    <div class="profile-info">
+                        <h4 id="profileUsername"></h4>
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <span class="stat-label">Wins</span>
+                                <span id="profileWins" class="stat-value"></span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Losses</span>
+                                <span id="profileLosses" class="stat-value"></span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Draws</span>
+                                <span id="profileDraws" class="stat-value"></span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Win Rate</span>
+                                <span id="profileWinRate" class="stat-value"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
