@@ -7,3 +7,15 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: FIREBASE_PROJECT_ID
+        sync: false  # Set in Render dashboard
+      - key: FIREBASE_PRIVATE_KEY_ID
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_CLIENT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_X509_CERT_URL
+        sync: false
