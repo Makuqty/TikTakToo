@@ -788,9 +788,9 @@ function switchSection(sectionName) {
         section.classList.remove('active');
     });
 
-    // Remove active class from nav items
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
+    // Remove active class from nav tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
     });
 
     // Show selected section
@@ -799,7 +799,7 @@ function switchSection(sectionName) {
         targetSection.classList.add('active');
     }
 
-    // Add active class to clicked nav item
+    // Add active class to clicked nav tab
     const targetNav = document.querySelector(`[data-section="${sectionName}"]`);
     if (targetNav) {
         targetNav.classList.add('active');
@@ -808,9 +808,9 @@ function switchSection(sectionName) {
 
 // Add navigation event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const section = item.dataset.section;
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const section = tab.dataset.section;
             switchSection(section);
         });
     });

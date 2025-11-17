@@ -36,39 +36,36 @@
 
         <!-- Lobby Screen -->
         <div id="lobbyScreen" class="screen">
-            <div class="dashboard-layout">
-                <!-- Sidebar -->
-                <aside class="sidebar">
-                    <div class="sidebar-header">
-                        <h2>TikTakToo</h2>
-                    </div>
-                    <nav class="sidebar-nav">
-                        <button class="nav-item active" data-section="dashboard">
-                            <span class="nav-icon">🏠</span>
-                            <span>Dashboard</span>
-                        </button>
-                        <button class="nav-item" data-section="players">
-                            <span class="nav-icon">👥</span>
-                            <span>Players</span>
-                        </button>
-                        <button class="nav-item" data-section="leaderboard">
-                            <span class="nav-icon">🏆</span>
-                            <span>Leaderboard</span>
-                        </button>
-                    </nav>
-                    <div class="sidebar-footer">
+            <div class="lobby-container">
+                <!-- Header -->
+                <header class="lobby-header">
+                    <h1>TikTakToo</h1>
+                    <div class="user-controls">
                         <button id="userProfile" onclick="showProfile()"></button>
                         <button onclick="logout()" class="logout-btn">Logout</button>
                     </div>
-                </aside>
+                </header>
 
-                <!-- Main Content -->
-                <main class="main-content">
+                <!-- Navigation Tabs -->
+                <nav class="lobby-nav">
+                    <button class="nav-tab active" data-section="dashboard">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="nav-tab" data-section="players">
+                        <span class="nav-icon">👥</span>
+                        <span>Players</span>
+                    </button>
+                    <button class="nav-tab" data-section="leaderboard">
+                        <span class="nav-icon">🏆</span>
+                        <span>Leaderboard</span>
+                    </button>
+                </nav>
+
+                <!-- Content Sections -->
+                <div class="lobby-content">
                     <!-- Dashboard Section -->
                     <section id="dashboardSection" class="content-section active">
-                        <header class="content-header">
-                            <h1>Dashboard</h1>
-                        </header>
                         <div class="dashboard-grid">
                             <div class="dashboard-card quick-match-card">
                                 <h3>Quick Match</h3>
@@ -97,9 +94,6 @@
 
                     <!-- Players Section -->
                     <section id="playersSection" class="content-section">
-                        <header class="content-header">
-                            <h1>Online Players</h1>
-                        </header>
                         <div class="players-container">
                             <div id="onlinePlayersList" class="players-list"></div>
                         </div>
@@ -107,14 +101,11 @@
 
                     <!-- Leaderboard Section -->
                     <section id="leaderboardSection" class="content-section">
-                        <header class="content-header">
-                            <h1>Leaderboard</h1>
-                        </header>
                         <div class="leaderboard-container">
                             <div id="leaderboard" class="leaderboard"></div>
                         </div>
                     </section>
-                </main>
+                </div>
             </div>
         </div>
 
