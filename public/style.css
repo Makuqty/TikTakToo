@@ -1667,7 +1667,42 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 1100px) {
+
+/* Large Desktop (1440px+) */
+@media (min-width: 1440px) {
+    .lobby-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .game-board {
+        width: 450px;
+        height: 450px;
+    }
+
+    .cell {
+        font-size: 3rem;
+    }
+}
+
+/* Desktop (1200px - 1439px) */
+@media (min-width: 1200px) and (max-width: 1439px) {
+    .game-board {
+        width: 400px;
+        height: 400px;
+    }
+}
+
+/* Small Desktop / Large Tablet (1100px - 1199px) */
+@media (max-width: 1199px) {
+    .game-board {
+        width: 380px;
+        height: 380px;
+    }
+}
+
+/* Tablet Landscape (1000px - 1099px) */
+@media (max-width: 1099px) {
     .lobby-header {
         flex-direction: column;
         gap: var(--space-4);
@@ -1693,9 +1728,15 @@ body {
         max-width: none;
         margin: 0;
     }
+
+    .game-board {
+        width: 350px;
+        height: 350px;
+    }
 }
 
-@media (max-width: 768px) {
+/* Tablet Portrait (768px - 999px) */
+@media (max-width: 999px) {
     :root {
         --space-8: 1.5rem;
         --space-12: 2rem;
@@ -1711,19 +1752,30 @@ body {
         padding: var(--space-8) var(--space-6);
         margin: var(--space-4);
         border-radius: var(--radius-lg);
+        max-width: 90vw;
     }
 
     .lobby-header {
-        flex-direction: column;
-        gap: var(--space-4);
-        text-align: center;
         padding: var(--space-4) var(--space-6);
         margin-bottom: var(--space-6);
     }
 
-    .lobby-section {
+    .lobby-content {
         padding: var(--space-4);
-        border-radius: var(--radius-lg);
+    }
+
+    .lobby-section {
+        padding: var(--space-6);
+        margin-bottom: var(--space-6);
+    }
+
+    .section-title {
+        font-size: var(--font-size-xl);
+        margin-bottom: var(--space-4);
+    }
+
+    .section-icon {
+        font-size: var(--font-size-2xl);
     }
 
     .game-header {
@@ -1740,7 +1792,9 @@ body {
     }
 
     .cell {
-        font-size: 2rem;
+        font-size: 2.5rem;
+        min-height: 80px;
+        min-width: 80px;
     }
 
     .chat-container {
@@ -1758,9 +1812,10 @@ body {
     }
 
     .symbol-choice button {
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         font-size: 1.25rem;
+        min-height: 44px;
     }
 
     .modal-content {
@@ -1768,41 +1823,145 @@ body {
         margin: var(--space-4);
         border-radius: var(--radius-lg);
         max-width: 95vw;
+        max-height: 90vh;
     }
 
     .profile-modal {
-        max-width: 350px;
+        max-width: 400px;
     }
 
     .avatar-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    /* Better touch targets for tablets */
+    button, .cell, .rps-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
 }
 
-@media (max-width: 480px) {
+/* Mobile Landscape (640px - 767px) */
+@media (max-width: 767px) and (orientation: landscape) {
+    .lobby-container {
+        padding: var(--space-2);
+    }
+
+    .lobby-section {
+        padding: var(--space-4);
+        margin-bottom: var(--space-4);
+    }
+
+    .game-board {
+        width: 250px;
+        height: 250px;
+    }
+
+    .cell {
+        font-size: 2rem;
+        min-height: 60px;
+        min-width: 60px;
+    }
+
+    .chat-container {
+        height: 200px;
+    }
+}
+
+/* Mobile Portrait (480px - 639px) */
+@media (max-width: 639px) {
     :root {
         --space-6: 1rem;
         --space-8: 1.25rem;
         --font-size-2xl: 1.125rem;
+        --font-size-xl: 1.125rem;
+    }
+
+    .screen {
+        padding: var(--space-2);
     }
 
     .auth-container {
         padding: var(--space-6) var(--space-4);
         margin: var(--space-2);
+        max-width: 95vw;
+    }
+
+    .auth-form input,
+    .auth-form button {
+        font-size: var(--font-size-base);
+        padding: var(--space-4) var(--space-5);
+        min-height: 48px;
+    }
+
+    .lobby-header {
+        padding: var(--space-3) var(--space-4);
+        margin-bottom: var(--space-4);
+    }
+
+    .lobby-header h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    .user-controls #userProfile,
+    .user-controls .logout-btn {
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--font-size-sm);
+        min-height: 44px;
+    }
+
+    .lobby-content {
+        padding: var(--space-2);
     }
 
     .lobby-section {
-        padding: var(--space-3);
+        padding: var(--space-4);
+        margin-bottom: var(--space-4);
+        border-radius: var(--radius-lg);
+    }
+
+    .section-title {
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--space-3);
+    }
+
+    .section-icon {
+        font-size: var(--font-size-xl);
+    }
+
+    .dashboard-card {
+        padding: var(--space-4);
+    }
+
+    .dashboard-card h3 {
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--space-2);
+    }
+
+    .find-match-btn {
+        padding: var(--space-4) var(--space-6);
+        font-size: var(--font-size-base);
+        min-height: 48px;
+    }
+
+    .stat-number {
+        font-size: var(--font-size-xl);
+    }
+
+    .game-header {
+        padding: var(--space-3) var(--space-4);
+        margin-bottom: var(--space-4);
     }
 
     .game-board {
         width: 280px;
         height: 280px;
-        gap: var(--space-2);
     }
 
     .cell {
-        font-size: 1.5rem;
+        font-size: 2rem;
+        min-height: 70px;
+        min-width: 70px;
         border-radius: var(--radius-lg);
     }
 
@@ -1811,19 +1970,64 @@ body {
         padding: var(--space-4);
     }
 
+    .chat-input input {
+        font-size: var(--font-size-base);
+        padding: var(--space-3) var(--space-4);
+        min-height: 44px;
+    }
+
+    .chat-input button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .rps-container {
+        padding: var(--space-4);
+    }
+
+    .rps-choices {
+        gap: var(--space-4);
+    }
+
+    .rps-btn {
+        padding: var(--space-6) var(--space-4);
+        min-height: 80px;
+        font-size: var(--font-size-base);
+    }
+
+    .rps-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--space-2);
+    }
+
     .modal-content {
         padding: var(--space-4) var(--space-3);
         margin: var(--space-2);
+        max-width: 95vw;
+        max-height: 95vh;
     }
 
     .symbol-choice {
         grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-2);
     }
 
     .symbol-choice button {
-        width: 55px;
-        height: 55px;
+        width: 60px;
+        height: 60px;
         font-size: 1rem;
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .challenge-actions button {
+        padding: var(--space-3) var(--space-6);
+        font-size: var(--font-size-base);
+        min-height: 48px;
+    }
+
+    .profile-modal {
+        max-width: 95vw;
     }
 
     .avatar-grid {
@@ -1834,6 +2038,90 @@ body {
     .avatar-option {
         padding: var(--space-3);
         font-size: 1.5rem;
+        min-height: 60px;
+    }
+
+    /* Enhanced touch targets for mobile */
+    button, .cell, .rps-btn, .symbol-choice button, .avatar-option {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+    }
+
+    /* Better spacing for mobile scrolling */
+    .players-list,
+    .leaderboard {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+}
+
+/* Small Mobile (360px - 479px) */
+@media (max-width: 479px) {
+    .game-board {
+        width: 240px;
+        height: 240px;
+    }
+
+    .cell {
+        font-size: 1.75rem;
+        min-height: 60px;
+        min-width: 60px;
+    }
+
+    .rps-btn {
+        padding: var(--space-4) var(--space-2);
+        min-height: 70px;
+    }
+
+    .rps-icon {
+        font-size: 2rem;
+    }
+
+    .symbol-choice button {
+        width: 55px;
+        height: 55px;
+    }
+
+    .avatar-option {
+        padding: var(--space-2);
+        font-size: 1.25rem;
+        min-height: 50px;
+    }
+}
+
+/* Very Small Mobile (320px - 359px) */
+@media (max-width: 359px) {
+    :root {
+        --space-4: 0.75rem;
+        --space-6: 0.875rem;
+        --font-size-lg: 0.95rem;
+        --font-size-base: 0.9rem;
+    }
+
+    .game-board {
+        width: 200px;
+        height: 200px;
+    }
+
+    .cell {
+        font-size: 1.5rem;
+        min-height: 50px;
+        min-width: 50px;
+    }
+
+    .lobby-section {
+        padding: var(--space-3);
+        margin-bottom: var(--space-3);
+    }
+
+    .section-title {
+        font-size: var(--font-size-base);
+        margin-bottom: var(--space-2);
+    }
+
+    .section-icon {
+        font-size: var(--font-size-lg);
     }
 }
 
