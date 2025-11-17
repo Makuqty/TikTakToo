@@ -1,6 +1,6 @@
-# Multiplayer Tic-Tac-Toe Game
+# TikTakToo
 
-A real-time multiplayer Tic-Tac-Toe game built with Node.js, Express, and Socket.IO.
+A real-time multiplayer TikTakToo game built with Node.js, Express, and Socket.IO.
 
 ## Features
 - User registration and authentication

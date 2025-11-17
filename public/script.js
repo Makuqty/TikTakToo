@@ -116,6 +116,29 @@ socket.on('challengeDeclined', (username) => {
     alert(`${username} declined your challenge`);
 });
 
+socket.on('rpsStart', (data) => {
+    currentRoom = data.roomId;
+    showScreen('rpsScreen');
+    document.getElementById('rpsStatus').textContent = 'Choose your move!';
+});
+
+socket.on('rpsResult', (data) => {
+    const { choices, winner } = data;
+    const players = Object.keys(choices);
+    const isWinner = winner === currentUser.username;
+    
+    document.getElementById('rpsStatus').innerHTML = `
+        <div>Results:</div>
+        <div>${players[0]}: ${choices[players[0]]}</div>
+        <div>${players[1]}: ${choices[players[1]]}</div>
+        <div><strong>${winner} goes first!</strong></div>
+    `;
+    
+    setTimeout(() => {
+        document.getElementById('rpsStatus').textContent = 'Starting game...';
+    }, 2000);
+});
+
 socket.on('gameStart', (gameData) => {
     currentRoom = gameData.roomId;
     showScreen('gameScreen');
@@ -125,6 +148,10 @@ socket.on('gameStart', (gameData) => {
     rematchBtn.style.display = 'none';
     rematchBtn.textContent = 'Rematch';
     rematchBtn.disabled = false;
+});
+
+socket.on('timerUpdate', (data) => {
+    updateTimer(data.timeLeft, data.currentPlayer);
 });
 
 socket.on('gameUpdate', (gameData) => {
@@ -303,9 +330,25 @@ function initializeGame(gameData) {
         board.appendChild(cell);
     }
     
-    document.getElementById('gameStatus').textContent = 
-        gameData.currentPlayer === currentUser.username ? 'Your turn' : `${gameData.currentPlayer}'s turn`;
+    updateGameStatus(gameData.currentPlayer);
     document.getElementById('chatMessages').innerHTML = '';
+}
+
+function updateGameStatus(currentPlayer) {
+    const statusText = currentPlayer === currentUser.username ? 'Your turn' : `${currentPlayer}'s turn`;
+    document.getElementById('gameStatus').innerHTML = `
+        <div>${statusText}</div>
+        <div id="timer" class="timer"></div>
+    `;
+}
+
+function updateTimer(timeLeft, currentPlayer) {
+    const timerEl = document.getElementById('timer');
+    if (timerEl) {
+        const isMyTurn = currentPlayer === currentUser.username;
+        timerEl.textContent = `Time: ${timeLeft}s`;
+        timerEl.className = `timer ${timeLeft <= 10 ? 'warning' : ''} ${isMyTurn ? 'my-turn' : ''}`;
+    }
 }
 
 function updateGameBoard(gameData) {
@@ -340,8 +383,11 @@ function updateGameBoard(gameData) {
                     `Cell ${index + 1}, ${isYourTurn ? 'your turn' : 'waiting for opponent'}`);
             }
         });
-        document.getElementById('gameStatus').textContent = 
-            gameData.currentPlayer === currentUser.username ? 'Your turn' : `${gameData.currentPlayer}'s turn`;
+        updateGameStatus(gameData.currentPlayer);
+        
+        if (gameData.autoMove) {
+            showGameEndNotification('Time up! Auto-move made.');
+        }
     } else {
         cells.forEach(cell => cell.disabled = true);
         
@@ -352,7 +398,7 @@ function updateGameBoard(gameData) {
             message = "It's a draw! 🤝";
         }
         
-        document.getElementById('gameStatus').textContent = message;
+        document.getElementById('gameStatus').innerHTML = message;
         
         // Delay notification to let move animation complete
         setTimeout(() => {
@@ -521,6 +567,26 @@ function requestRematch() {
 function respondToRematch(accepted) {
     socket.emit('respondToRematch', { roomId: currentRoom, accepted });
     document.getElementById('rematchRequestModal').classList.remove('active');
+}
+
+function makeRPSChoice(choice) {
+    socket.emit('rpsChoice', { roomId: currentRoom, choice });
+    document.getElementById('rpsStatus').textContent = 'Waiting for opponent...';
+    
+    // Disable buttons after choice
+    document.querySelectorAll('.rps-btn').forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.choice === choice) {
+            btn.style.background = '#4CAF50';
+        }
+    });
+}
+
+function leaveRPS() {
+    socket.emit('leaveGame', { roomId: currentRoom });
+    currentRoom = null;
+    showScreen('lobbyScreen');
+    loadLeaderboard();
 }
 
 function leaveGame() {

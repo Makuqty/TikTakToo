@@ -3,7 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
+const admin = require('firebase-admin');
 
 const app = express();
 const server = http.createServer(app);
@@ -12,20 +12,53 @@ const io = socketIo(server);
 app.use(express.json());
 app.use(express.static('public'));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tictactoe');
+// Initialize Firebase
+const serviceAccount = {
+  type: "service_account",
+  project_id: "tiktaktoo-f55de",
+  private_key_id: "12d4682394d5fefb489248ee0abc83f4987e3e4d",
+  private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCP3NQHca+1B2G/\nNFwk06Jt43cWUPsR6p3D3+vaPzbulYDfAhJiNaA/01HCLp3gqFpJZG26lYTe3oBL\nmRqToy+aGajyfrpf5ijVdQZmmLrm0D0ZN+VeFY2anJLhwYrjYeWz17U8H5VXk3px\nuKTJvf+mDSj8l5ySMp8TVia7OUlqjbALo/PRQr0qXWBxYjnzT8g47eWGKR7Iy8Tk\nVgMmXpAezng28HYN6Xmx4sAFnPAnCFyDvjF/SiBJ0fa7w5HYO1/4QcfBszhyqbbR\nMpZxEksIADnv2g6y2Qoqa3MLl5f5kgztp3Db3PTSUKfHuuijAzgCpaCXhAzaiYFB\nCZyI2veRAgMBAAECggEAAZMB5XdYoyPI2+N8TiTqcjwkokG62dWTdMzqY/ogapsW\nIFxhn6Vb/1LNSXiCiXWT8CCFzwk0BI8oACoAFbcIAAAYhZB3FnIzYxtdYI1lVIUD\n+XpTCdiDVpqNGhZMXNJfGydalYi4HAwZYwnUCbG6t2zb6dXN1KhyWJnH+k2lTbqp\nn74sS4iUOOiQMXsd+v9sTCP86WRVhixenCBr1npZuqUFYph3342fG7137tsgchi4\nUeriaWEWGhFUxZopGTcnQlMmrrV93Irs20LHQR8P9UZkLvzcxkt3C4Pcqn4H07n3\nfD0bCTdxdqds+kzU2iLsmlpazlkAN39+MGIfSZkcmQKBgQDK0wu3iFqN4N7bTRZK\n8XJgNd9sO1NO7SHr/xEi/RcxrVwJnE6AQPZWDyTbLTqXlDaqMqg49oRdBprXsops\nhUHG+Q61fRqnrdg3Bt/5IUWDp3dTMrGAtS0ascf11ofX8+WKBTgEDr5O7KN5RvCH\nxP4eVS0OA1nIG8gXsMew+uQqCQKBgQC1lHKFslyCYrZQfkFtQh+oO8CKxuriFeWg\nnXfGpjgwOPyVJQUKIpWGwN+EFKA2NwyWFQXFHb9ebwrGl2obiXOUl5eTKck7TrvA\nETY+uzzzwjL/AZmy7O69k8qbR3v3OH3Jf850KGMEcF44V9tk3qzFBGIAiWVoat9p\nALmU/Z3jSQKBgEgKekjwR6nJS579XIO2CvgdaoRY9hg8piXa7U1ONCTS/LP1LvTj\nHhwnOOIYyIz6egguAg5pkU4xgGJI6l3tXxW7dPwFuagBWaEB8h/dL4G5w+prQR0E\nPUcUCoBJeOq9mLRTcjgOvI3wA4iaJ+kxkUlY2630hrlLFOFFS0iTdONxAoGAD+Dq\nXtypEFHXhZR03jwRDqIjBT+93IVzrib3CW0Rrs3c8KHrHebGUqFdKmyvUe5gcGNo\nPMOML5LgS1uEUOIlNFJJU/oseb451uLqbnPrMZnC4d/e8/GaMwPQjOGkaosLHOrL\nQAckGYhGBQFR0zFRxGzMsSVSs93cqY8Bq5C+FNkCgYBMDfNQ4D5hdAaKofqM8yEC\n0X56KAeK+7KCFNSWVo6fAvTizsmh2kwbALond4z6Q+alaf7HB7YSjzuypxZzthLj\ne5DlfuRkKPeA/2/RTmNQ4xhICwYkRFOXB1WGtlC3JcAl9DFOXkhlZtUeEQpc+51M\nWxeRNJEDKu0N6wIkTtWvQg==\n-----END PRIVATE KEY-----\n",
+  client_email: "firebase-adminsdk-fbsvc@tiktaktoo-f55de.iam.gserviceaccount.com",
+  client_id: "103735416946014575075",
+  auth_uri: "https://accounts.google.com/o/oauth2/auth",
+  token_uri: "https://oauth2.googleapis.com/token",
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40tiktaktoo-f55de.iam.gserviceaccount.com",
+  universe_domain: "googleapis.com"
+};
 
-// User schema
-const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
-  wins: { type: Number, default: 0 },
-  losses: { type: Number, default: 0 },
-  draws: { type: Number, default: 0 },
-  avatar: String
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: `https://tiktaktoo-f55de-default-rtdb.firebaseio.com/`
 });
 
-const User = mongoose.model('User', userSchema);
+const db = admin.firestore();
+const rtdb = admin.database();
+
+// Use Firebase for data storage
+const useFirebase = true;
+const users = new Map();
+const USERS_FILE = 'users.json';
+
+// Load users for fallback if needed
+loadUsers();
+
+function loadUsers() {
+  try {
+    if (require('fs').existsSync(USERS_FILE)) {
+      const data = require('fs').readFileSync(USERS_FILE, 'utf8');
+      const usersArray = JSON.parse(data);
+      usersArray.forEach(user => users.set(user.username, user));
+    }
+  } catch (error) {
+    console.log('Starting with empty users');
+  }
+}
+
+function saveUsers() {
+  const usersArray = Array.from(users.values());
+  require('fs').writeFileSync(USERS_FILE, JSON.stringify(usersArray, null, 2));
+}
 
 const onlineUsers = new Map();
 const gameRooms = new Map();
@@ -39,12 +72,31 @@ const JWT_SECRET = 'your-secret-key';
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Username already exists' });
+
+    if (useFirebase) {
+      const userRef = db.collection('users').doc(username);
+      const userDoc = await userRef.get();
+      if (userDoc.exists) {
+        return res.status(400).json({ error: 'Username already exists' });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await userRef.set({
+        username,
+        password: hashedPassword,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        avatar: null
+      });
+    } else {
+      if (users.has(username)) {
+        return res.status(400).json({ error: 'Username already exists' });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      users.set(username, { username, password: hashedPassword, wins: 0, losses: 0, draws: 0 });
+      saveUsers();
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ username, password: hashedPassword });
+
     res.json({ message: 'User registered successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Registration failed' });
@@ -54,10 +106,22 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
+
+    let user;
+    if (useFirebase) {
+      const userDoc = await db.collection('users').doc(username).get();
+      if (!userDoc.exists) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      user = userDoc.data();
+    } else {
+      user = users.get(username);
+    }
+
     if (!user || !await bcrypt.compare(password, user.password)) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
     const token = jwt.sign({ username }, JWT_SECRET);
     res.json({ token, user: { username, wins: user.wins, losses: user.losses, draws: user.draws, avatar: user.avatar } });
   } catch (error) {
@@ -67,9 +131,19 @@ app.post('/api/login', async (req, res) => {
 
 app.get('/api/leaderboard', async (req, res) => {
   try {
-    const leaderboard = await User.find({}, 'username wins losses draws')
-      .sort({ wins: -1 })
-      .limit(10);
+    let leaderboard;
+    if (useFirebase) {
+      const usersSnapshot = await db.collection('users').orderBy('wins', 'desc').limit(10).get();
+      leaderboard = usersSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return { username: data.username, wins: data.wins, losses: data.losses, draws: data.draws };
+      });
+    } else {
+      leaderboard = Array.from(users.values())
+        .sort((a, b) => b.wins - a.wins)
+        .slice(0, 10)
+        .map(({ username, wins, losses, draws }) => ({ username, wins, losses, draws }));
+    }
     res.json(leaderboard);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch leaderboard' });
@@ -81,7 +155,15 @@ io.on('connection', (socket) => {
   socket.on('authenticate', async (token) => {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
-      const user = await User.findOne({ username: decoded.username });
+      let user;
+      if (useFirebase) {
+        const userDoc = await db.collection('users').doc(decoded.username).get();
+        if (userDoc.exists) {
+          user = userDoc.data();
+        }
+      } else {
+        user = users.get(decoded.username);
+      }
       if (user) {
         socket.username = decoded.username;
         onlineUsers.set(socket.id, { username: decoded.username, socketId: socket.id });
@@ -123,17 +205,20 @@ io.on('connection', (socket) => {
             [challenge.challenged]: { symbol: symbol, socketId: socket.id }
           },
           board: Array(9).fill(null),
-          currentPlayer: firstPlayer,
-          gameState: 'playing',
-          lastWinner: null
+          currentPlayer: null,
+          gameState: 'rps',
+          lastWinner: null,
+          lastLoser: null,
+          rpsChoices: {},
+          moveTimer: null,
+          timeLeft: 5,
+          isFirstGame: true
         });
 
         [challengerUser.socketId, socket.id].forEach(socketId => {
-          io.to(socketId).emit('gameStart', {
+          io.to(socketId).emit('rpsStart', {
             roomId,
-            players: gameRooms.get(roomId).players,
-            currentPlayer: firstPlayer,
-            board: gameRooms.get(roomId).board
+            players: gameRooms.get(roomId).players
           });
         });
       } else {
@@ -143,7 +228,58 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('makeMove', ({ roomId, position }) => {
+  socket.on('rpsChoice', ({ roomId, choice }) => {
+    const room = gameRooms.get(roomId);
+    if (room && room.gameState === 'rps' && room.players[socket.username]) {
+      room.rpsChoices[socket.username] = choice;
+      
+      // Check if both players made their choice
+      if (Object.keys(room.rpsChoices).length === 2) {
+        const players = Object.keys(room.players);
+        const [player1, player2] = players;
+        const choice1 = room.rpsChoices[player1];
+        const choice2 = room.rpsChoices[player2];
+        
+        let winner = null;
+        if (choice1 === choice2) {
+          // Tie - random winner
+          winner = Math.random() < 0.5 ? player1 : player2;
+        } else if (
+          (choice1 === 'rock' && choice2 === 'scissors') ||
+          (choice1 === 'paper' && choice2 === 'rock') ||
+          (choice1 === 'scissors' && choice2 === 'paper')
+        ) {
+          winner = player1;
+        } else {
+          winner = player2;
+        }
+        
+        room.currentPlayer = winner;
+        room.gameState = 'playing';
+        
+        Object.values(room.players).forEach(player => {
+          io.to(player.socketId).emit('rpsResult', {
+            choices: room.rpsChoices,
+            winner: winner
+          });
+        });
+        
+        setTimeout(() => {
+          Object.values(room.players).forEach(player => {
+            io.to(player.socketId).emit('gameStart', {
+              roomId,
+              players: room.players,
+              currentPlayer: room.currentPlayer,
+              board: room.board
+            });
+          });
+          startMoveTimer(roomId);
+        }, 3000);
+      }
+    }
+  });
+
+  socket.on('makeMove', async ({ roomId, position }) => {
     const room = gameRooms.get(roomId);
     if (room && room.currentPlayer === socket.username && room.board[position] === null) {
       room.board[position] = room.players[socket.username].symbol;
@@ -154,17 +290,36 @@ io.on('connection', (socket) => {
       if (winner || isDraw) {
         room.gameState = winner ? 'finished' : 'draw';
         if (winner) {
-          await User.updateOne({ username: winner }, { $inc: { wins: 1 } });
           const loser = Object.keys(room.players).find(p => p !== winner);
-          await User.updateOne({ username: loser }, { $inc: { losses: 1 } });
           room.lastWinner = winner;
+          room.lastLoser = loser;
+
+          if (useFirebase) {
+            await db.collection('users').doc(winner).update({ wins: admin.firestore.FieldValue.increment(1) });
+            await db.collection('users').doc(loser).update({ losses: admin.firestore.FieldValue.increment(1) });
+          } else {
+            const winnerUser = users.get(winner);
+            const loserUser = users.get(loser);
+            if (winnerUser) winnerUser.wins++;
+            if (loserUser) loserUser.losses++;
+            saveUsers();
+          }
         } else {
-          await Promise.all(Object.keys(room.players).map(player => 
-            User.updateOne({ username: player }, { $inc: { draws: 1 } })
-          ));
+          if (useFirebase) {
+            await Promise.all(Object.keys(room.players).map(player =>
+              db.collection('users').doc(player).update({ draws: admin.firestore.FieldValue.increment(1) })
+            ));
+          } else {
+            Object.keys(room.players).forEach(player => {
+              const user = users.get(player);
+              if (user) user.draws++;
+            });
+            saveUsers();
+          }
         }
       } else {
         room.currentPlayer = Object.keys(room.players).find(p => p !== socket.username);
+        startMoveTimer(roomId);
       }
 
       Object.values(room.players).forEach(player => {
@@ -221,20 +376,40 @@ io.on('connection', (socket) => {
         
         // Check if both players agreed
         if (room.rematchRequests.size === 2) {
-          // Start new game
+          // Reset game state
           room.board = Array(9).fill(null);
-          room.gameState = 'playing';
-          room.currentPlayer = room.lastWinner ? Object.keys(room.players).find(p => p !== room.lastWinner) : Object.keys(room.players)[0];
+          room.timeLeft = 5;
+          clearTimeout(room.moveTimer);
           room.rematchRequests.clear();
+          room.isFirstGame = false;
           
-          Object.values(room.players).forEach(player => {
-            io.to(player.socketId).emit('gameStart', {
-              roomId,
-              players: room.players,
-              currentPlayer: room.currentPlayer,
-              board: room.board
+          // Determine first player: loser goes first, or RPS if first game/draw
+          if (room.lastLoser) {
+            room.currentPlayer = room.lastLoser;
+            room.gameState = 'playing';
+            
+            Object.values(room.players).forEach(player => {
+              io.to(player.socketId).emit('gameStart', {
+                roomId,
+                players: room.players,
+                currentPlayer: room.currentPlayer,
+                board: room.board
+              });
             });
-          });
+            startMoveTimer(roomId);
+          } else {
+            // First game or previous draw - use RPS
+            room.gameState = 'rps';
+            room.currentPlayer = null;
+            room.rpsChoices = {};
+            
+            Object.values(room.players).forEach(player => {
+              io.to(player.socketId).emit('rpsStart', {
+                roomId,
+                players: room.players
+              });
+            });
+          }
         }
       } else {
         // Notify requester that rematch was declined
@@ -255,7 +430,15 @@ io.on('connection', (socket) => {
   socket.on('updateAvatar', async (avatar) => {
     if (socket.username) {
       try {
-        await User.updateOne({ username: socket.username }, { avatar });
+        if (useFirebase) {
+          await db.collection('users').doc(socket.username).update({ avatar });
+        } else {
+          const user = users.get(socket.username);
+          if (user) {
+            user.avatar = avatar;
+            saveUsers();
+          }
+        }
         socket.emit('avatarUpdated', avatar);
       } catch (error) {
         socket.emit('error', 'Failed to update avatar');
@@ -333,21 +516,22 @@ io.on('connection', (socket) => {
         gameRooms.set(matchId, {
           players: match.players,
           board: Array(9).fill(null),
-          currentPlayer: firstPlayer,
-          gameState: 'playing',
-          lastWinner: null
+          currentPlayer: null,
+          gameState: 'rps',
+          lastWinner: null,
+          lastLoser: null,
+          rpsChoices: {},
+          moveTimer: null,
+          timeLeft: 5,
+          isFirstGame: true
         });
         
-        // Start game for both players
-        const gameData = {
-          roomId: matchId,
-          players: match.players,
-          currentPlayer: firstPlayer,
-          board: Array(9).fill(null)
-        };
-        
+        // Start RPS mini-game for both players
         Object.values(match.players).forEach(player => {
-          io.to(player.socketId).emit('gameStart', gameData);
+          io.to(player.socketId).emit('rpsStart', {
+            roomId: matchId,
+            players: match.players
+          });
         });
         
         pendingMatches.delete(matchId);
@@ -380,6 +564,85 @@ function checkWinner(board, room) {
     }
   }
   return null;
+}
+
+async function startMoveTimer(roomId) {
+  const room = gameRooms.get(roomId);
+  if (!room || room.gameState !== 'playing') return;
+
+  room.timeLeft = 5;
+  clearTimeout(room.moveTimer);
+
+  const timer = setInterval(async () => {
+    room.timeLeft--;
+
+    Object.values(room.players).forEach(player => {
+      io.to(player.socketId).emit('timerUpdate', {
+        timeLeft: room.timeLeft,
+        currentPlayer: room.currentPlayer
+      });
+    });
+
+    if (room.timeLeft <= 0) {
+      clearInterval(timer);
+      // Auto-move for current player (random empty cell)
+      const emptyCells = room.board.map((cell, index) => cell === null ? index : null).filter(i => i !== null);
+      if (emptyCells.length > 0) {
+        const randomMove = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        room.board[randomMove] = room.players[room.currentPlayer].symbol;
+
+        const winner = checkWinner(room.board, room);
+        const isDraw = !winner && room.board.every(cell => cell !== null);
+
+        if (winner || isDraw) {
+          room.gameState = winner ? 'finished' : 'draw';
+          if (winner) {
+            if (useFirebase) {
+              await db.collection('users').doc(winner).update({ wins: admin.firestore.FieldValue.increment(1) });
+              const loser = Object.keys(room.players).find(p => p !== winner);
+              await db.collection('users').doc(loser).update({ losses: admin.firestore.FieldValue.increment(1) });
+            } else {
+              const winnerUser = users.get(winner);
+              const loser = Object.keys(room.players).find(p => p !== winner);
+              const loserUser = users.get(loser);
+              if (winnerUser) winnerUser.wins++;
+              if (loserUser) loserUser.losses++;
+              saveUsers();
+            }
+            room.lastWinner = winner;
+          } else {
+            if (useFirebase) {
+              await Promise.all(Object.keys(room.players).map(player =>
+                db.collection('users').doc(player).update({ draws: admin.firestore.FieldValue.increment(1) })
+              ));
+            } else {
+              Object.keys(room.players).forEach(player => {
+                const user = users.get(player);
+                if (user) user.draws++;
+              });
+              saveUsers();
+            }
+          }
+        } else {
+          room.currentPlayer = Object.keys(room.players).find(p => p !== room.currentPlayer);
+          startMoveTimer(roomId);
+        }
+
+        Object.values(room.players).forEach(player => {
+          io.to(player.socketId).emit('gameUpdate', {
+            board: room.board,
+            currentPlayer: room.currentPlayer,
+            gameState: room.gameState,
+            winner: winner,
+            isDraw: isDraw,
+            autoMove: true
+          });
+        });
+      }
+    }
+  }, 1000);
+
+  room.moveTimer = timer;
 }
 
 const PORT = process.env.PORT || 3000;

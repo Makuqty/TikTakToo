@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#1a1a2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Tic-Tac-Toe Multiplayer</title>
+    <title>TikTakToo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
         <!-- Login/Register Screen -->
         <div id="authScreen" class="screen active">
             <div class="auth-container">
-                <h1>Tic-Tac-Toe</h1>
+                <h1>TikTakToo</h1>
                 <div class="auth-tabs">
                     <button class="tab-btn active" onclick="showLogin()">Login</button>
                     <button class="tab-btn" onclick="showRegister()">Register</button>
@@ -61,6 +61,31 @@
                         <div id="leaderboard" class="leaderboard"></div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Rock Paper Scissors Screen -->
+        <div id="rpsScreen" class="screen">
+            <div class="rps-container">
+                <div class="rps-header">
+                    <h2>Rock Paper Scissors</h2>
+                    <p id="rpsStatus">Choose your move!</p>
+                </div>
+                <div class="rps-choices">
+                    <button class="rps-btn" data-choice="rock" onclick="makeRPSChoice('rock')">
+                        <span class="rps-icon">🪨</span>
+                        <span>Rock</span>
+                    </button>
+                    <button class="rps-btn" data-choice="paper" onclick="makeRPSChoice('paper')">
+                        <span class="rps-icon">📄</span>
+                        <span>Paper</span>
+                    </button>
+                    <button class="rps-btn" data-choice="scissors" onclick="makeRPSChoice('scissors')">
+                        <span class="rps-icon">✂️</span>
+                        <span>Scissors</span>
+                    </button>
+                </div>
+                <button onclick="leaveRPS()" class="leave-btn">Leave Game</button>
             </div>
         </div>
 
