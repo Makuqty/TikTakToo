@@ -46,26 +46,14 @@
                     </div>
                 </header>
 
-                <!-- Navigation Tabs -->
-                <nav class="lobby-nav">
-                    <button class="nav-tab active" data-section="dashboard">
-                        <span class="nav-icon">🏠</span>
-                        <span>Dashboard</span>
-                    </button>
-                    <button class="nav-tab" data-section="players">
-                        <span class="nav-icon">👥</span>
-                        <span>Players</span>
-                    </button>
-                    <button class="nav-tab" data-section="leaderboard">
-                        <span class="nav-icon">🏆</span>
-                        <span>Leaderboard</span>
-                    </button>
-                </nav>
-
                 <!-- Content Sections -->
                 <div class="lobby-content">
                     <!-- Dashboard Section -->
-                    <section id="dashboardSection" class="content-section active">
+                    <section class="lobby-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">🏠</span>
+                            Dashboard
+                        </h2>
                         <div class="dashboard-grid">
                             <div class="dashboard-card quick-match-card">
                                 <h3>Quick Match</h3>
@@ -93,14 +81,22 @@
                     </section>
 
                     <!-- Players Section -->
-                    <section id="playersSection" class="content-section">
+                    <section class="lobby-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">👥</span>
+                            Online Players
+                        </h2>
                         <div class="players-container">
                             <div id="onlinePlayersList" class="players-list"></div>
                         </div>
                     </section>
 
                     <!-- Leaderboard Section -->
-                    <section id="leaderboardSection" class="content-section">
+                    <section class="lobby-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">🏆</span>
+                            Leaderboard
+                        </h2>
                         <div class="leaderboard-container">
                             <div id="leaderboard" class="leaderboard"></div>
                         </div>

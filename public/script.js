@@ -781,40 +781,7 @@ function updateFindMatchButton() {
     }
 }
 
-// Navigation functions
-function switchSection(sectionName) {
-    // Hide all sections
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.remove('active');
-    });
-
-    // Remove active class from nav tabs
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-
-    // Show selected section
-    const targetSection = document.getElementById(sectionName + 'Section');
-    if (targetSection) {
-        targetSection.classList.add('active');
-    }
-
-    // Add active class to clicked nav tab
-    const targetNav = document.querySelector(`[data-section="${sectionName}"]`);
-    if (targetNav) {
-        targetNav.classList.add('active');
-    }
-}
-
-// Add navigation event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            const section = tab.dataset.section;
-            switchSection(section);
-        });
-    });
-});
+// Navigation functions removed - all sections are now visible on single page
 
 // Auto-login if token exists
 window.addEventListener('load', () => {

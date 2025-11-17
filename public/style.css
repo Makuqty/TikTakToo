@@ -387,53 +387,26 @@ body {
     box-shadow: var(--shadow-md);
 }
 
-.lobby-nav {
-    display: flex;
-    background: var(--surface-light);
-    border-bottom: 1px solid var(--border);
-    padding: 0 var(--space-8);
+.lobby-section {
+    margin-bottom: var(--space-8);
 }
 
-.nav-tab {
+.section-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text);
+    margin-bottom: var(--space-6);
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-4) var(--space-6);
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    position: relative;
-    border-bottom: 3px solid transparent;
+    gap: var(--space-3);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.nav-tab:hover {
-    color: var(--text);
-    background: rgba(99, 102, 241, 0.05);
-}
-
-.nav-tab.active {
-    color: var(--primary);
-    background: rgba(99, 102, 241, 0.1);
-    border-bottom-color: var(--primary);
-    box-shadow: var(--glow-primary);
-}
-
-.nav-tab.active::before {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-}
-
-.nav-icon {
-    font-size: var(--font-size-lg);
+.section-icon {
+    font-size: var(--font-size-3xl);
 }
 
 .lobby-content {
@@ -442,16 +415,7 @@ body {
     padding: var(--space-8);
 }
 
-.content-section {
-    display: none;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto var(--space-8) auto;
-}
-
-.content-section.active {
-    display: block;
-}
+/* Content sections are now always visible */
 
 .dashboard-grid {
     display: grid;
@@ -1684,22 +1648,6 @@ body {
 
     .user-controls {
         justify-content: center;
-    }
-
-    .lobby-nav {
-        padding: var(--space-3) var(--space-6);
-        overflow-x: auto;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .lobby-nav::-webkit-scrollbar {
-        display: none;
-    }
-
-    .nav-tab {
-        flex-shrink: 0;
-        white-space: nowrap;
     }
 
     .dashboard-grid {
