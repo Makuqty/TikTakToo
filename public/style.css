@@ -1146,20 +1146,28 @@ body {
     color: var(--secondary);
 }
 
-.cell.star {
+.cell.star,
+.cell.star i {
     color: #fbbf24;
+    font-size: 2.5rem;
 }
 
-.cell.fire {
+.cell.fire,
+.cell.fire i {
     color: #f97316;
+    font-size: 2.5rem;
 }
 
-.cell.lightning {
+.cell.lightning,
+.cell.lightning i {
     color: #8b5cf6;
+    font-size: 2.5rem;
 }
 
-.cell.diamond {
+.cell.diamond,
+.cell.diamond i {
     color: #06d6a0;
+    font-size: 2.5rem;
 }
 
 .cell.fun,
@@ -1504,6 +1512,13 @@ body {
     box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.symbol-choice button i {
+    font-size: 1.5rem;
 }
 
 .symbol-choice button::before {

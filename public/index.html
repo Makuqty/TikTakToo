@@ -114,7 +114,7 @@
                     <div class="footer-content">
                         <p>&copy; Made by: ISU-Cauayan BSIT 3A WMAD students. All rights reserved.</p>
                         <div class="footer-links">
-                            <span>Made with ❤️ for gaming</span>
+                            <span>Made with <i class="bi bi-heart-fill"></i> for gaming</span>
                         </div>
                     </div>
                 </footer>
@@ -171,18 +171,18 @@
                         </div>
                         <div id="emotePicker" class="emote-picker hidden">
                             <div class="emote-grid">
-                                <i class="bi bi-emoji-smile" onclick="addEmote('😀')"></i>
-                                <i class="bi bi-emoji-laughing" onclick="addEmote('😂')"></i>
-                                <i class="bi bi-emoji-sunglasses" onclick="addEmote('😎')"></i>
-                                <i class="bi bi-emoji-heart-eyes" onclick="addEmote('😍')"></i>
-                                <i class="bi bi-emoji-thinking" onclick="addEmote('🤔')"></i>
-                                <i class="bi bi-emoji-frown" onclick="addEmote('😭')"></i>
-                                <i class="bi bi-emoji-angry" onclick="addEmote('😡')"></i>
-                                <i class="bi bi-hand-thumbs-up" onclick="addEmote('👍')"></i>
-                                <i class="bi bi-hand-thumbs-down" onclick="addEmote('👎')"></i>
-                                <i class="bi bi-heart-fill" onclick="addEmote('❤️')"></i>
-                                <i class="bi bi-fire" onclick="addEmote('🔥')"></i>
-                                <i class="bi bi-star-fill" onclick="addEmote('⭐')"></i>
+                                <i class="bi bi-emoji-smile" onclick="addEmote(':smile:')"></i>
+                                <i class="bi bi-emoji-laughing" onclick="addEmote(':laugh:')"></i>
+                                <i class="bi bi-emoji-sunglasses" onclick="addEmote(':cool:')"></i>
+                                <i class="bi bi-emoji-heart-eyes" onclick="addEmote(':love:')"></i>
+                                <i class="bi bi-emoji-thinking" onclick="addEmote(':think:')"></i>
+                                <i class="bi bi-emoji-frown" onclick="addEmote(':sad:')"></i>
+                                <i class="bi bi-emoji-angry" onclick="addEmote(':angry:')"></i>
+                                <i class="bi bi-hand-thumbs-up" onclick="addEmote(':thumbsup:')"></i>
+                                <i class="bi bi-hand-thumbs-down" onclick="addEmote(':thumbsdown:')"></i>
+                                <i class="bi bi-heart-fill" onclick="addEmote(':heart:')"></i>
+                                <i class="bi bi-fire" onclick="addEmote(':fire:')"></i>
+                                <i class="bi bi-star-fill" onclick="addEmote(':star:')"></i>
                             </div>
                         </div>
                     </div>
@@ -197,10 +197,10 @@
                 <div class="symbol-choice">
                     <button onclick="sendChallenge('X')" aria-label="Choose X symbol">X</button>
                     <button onclick="sendChallenge('O')" aria-label="Choose O symbol">O</button>
-                    <button onclick="sendChallenge('⭐')" aria-label="Choose star symbol">⭐</button>
-                    <button onclick="sendChallenge('🔥')" aria-label="Choose fire symbol">🔥</button>
-                    <button onclick="sendChallenge('⚡')" aria-label="Choose lightning symbol">⚡</button>
-                    <button onclick="sendChallenge('💎')" aria-label="Choose diamond symbol">💎</button>
+                    <button onclick="sendChallenge('star')" aria-label="Choose star symbol"><i class="bi bi-star-fill"></i></button>
+                    <button onclick="sendChallenge('fire')" aria-label="Choose fire symbol"><i class="bi bi-fire"></i></button>
+                    <button onclick="sendChallenge('lightning')" aria-label="Choose lightning symbol"><i class="bi bi-lightning-fill"></i></button>
+                    <button onclick="sendChallenge('diamond')" aria-label="Choose diamond symbol"><i class="bi bi-gem"></i></button>
                     <button onclick="sendChallenge('fun')" aria-label="Choose fun symbol" class="image-symbol"><img src="images/fun.jpg" alt="Fun"></button>
                     <button onclick="sendChallenge('giga')" aria-label="Choose giga symbol" class="image-symbol"><img src="images/giga.jpg" alt="Giga"></button>
                     <button onclick="sendChallenge('kupal')" aria-label="Choose kupal symbol" class="image-symbol"><img src="images/kupal.jpg" alt="Kupal"></button>
@@ -248,10 +248,10 @@
                 <div id="challengeSymbolChoice" class="symbol-choice" style="display:none;">
                     <button onclick="acceptChallengeWithSymbol('X')" aria-label="Choose X symbol">X</button>
                     <button onclick="acceptChallengeWithSymbol('O')" aria-label="Choose O symbol">O</button>
-                    <button onclick="acceptChallengeWithSymbol('⭐')" aria-label="Choose star symbol">⭐</button>
-                    <button onclick="acceptChallengeWithSymbol('🔥')" aria-label="Choose fire symbol">🔥</button>
-                    <button onclick="acceptChallengeWithSymbol('⚡')" aria-label="Choose lightning symbol">⚡</button>
-                    <button onclick="acceptChallengeWithSymbol('💎')" aria-label="Choose diamond symbol">💎</button>
+                    <button onclick="acceptChallengeWithSymbol('star')" aria-label="Choose star symbol"><i class="bi bi-star-fill"></i></button>
+                    <button onclick="acceptChallengeWithSymbol('fire')" aria-label="Choose fire symbol"><i class="bi bi-fire"></i></button>
+                    <button onclick="acceptChallengeWithSymbol('lightning')" aria-label="Choose lightning symbol"><i class="bi bi-lightning-fill"></i></button>
+                    <button onclick="acceptChallengeWithSymbol('diamond')" aria-label="Choose diamond symbol"><i class="bi bi-gem"></i></button>
                     <button onclick="acceptChallengeWithSymbol('fun')" aria-label="Choose fun symbol" class="image-symbol"><img src="images/fun.jpg" alt="Fun"></button>
                     <button onclick="acceptChallengeWithSymbol('giga')" aria-label="Choose giga symbol" class="image-symbol"><img src="images/giga.jpg" alt="Giga"></button>
                     <button onclick="acceptChallengeWithSymbol('kupal')" aria-label="Choose kupal symbol" class="image-symbol"><img src="images/kupal.jpg" alt="Kupal"></button>
@@ -275,10 +275,10 @@
                 <div class="symbol-choice" style="display:grid;">
                     <button onclick="chooseMatchSymbol('X')" aria-label="Choose X symbol">X</button>
                     <button onclick="chooseMatchSymbol('O')" aria-label="Choose O symbol">O</button>
-                    <button onclick="chooseMatchSymbol('⭐')" aria-label="Choose star symbol">⭐</button>
-                    <button onclick="chooseMatchSymbol('🔥')" aria-label="Choose fire symbol">🔥</button>
-                    <button onclick="chooseMatchSymbol('⚡')" aria-label="Choose lightning symbol">⚡</button>
-                    <button onclick="chooseMatchSymbol('💎')" aria-label="Choose diamond symbol">💎</button>
+                    <button onclick="chooseMatchSymbol('star')" aria-label="Choose star symbol"><i class="bi bi-star-fill"></i></button>
+                    <button onclick="chooseMatchSymbol('fire')" aria-label="Choose fire symbol"><i class="bi bi-fire"></i></button>
+                    <button onclick="chooseMatchSymbol('lightning')" aria-label="Choose lightning symbol"><i class="bi bi-lightning-fill"></i></button>
+                    <button onclick="chooseMatchSymbol('diamond')" aria-label="Choose diamond symbol"><i class="bi bi-gem"></i></button>
                     <button onclick="chooseMatchSymbol('fun')" aria-label="Choose fun symbol" class="image-symbol"><img src="images/fun.jpg" alt="Fun"></button>
                     <button onclick="chooseMatchSymbol('giga')" aria-label="Choose giga symbol" class="image-symbol"><img src="images/giga.jpg" alt="Giga"></button>
                     <button onclick="chooseMatchSymbol('kupal')" aria-label="Choose kupal symbol" class="image-symbol"><img src="images/kupal.jpg" alt="Kupal"></button>

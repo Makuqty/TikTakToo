@@ -404,13 +404,17 @@ function updateGameBoard(gameData) {
     gameData.board.forEach((symbol, index) => {
         if (symbol) {
             let symbolClass = symbol.toLowerCase();
-            if (symbol === '⭐') symbolClass = 'star';
-            else if (symbol === '🔥') symbolClass = 'fire';
-            else if (symbol === '⚡') symbolClass = 'lightning';
-            else if (symbol === '💎') symbolClass = 'diamond';
             
             if (['fun', 'giga', 'kupal', 'lol', 'suck', 'troll', 'isu', 'ccsict'].includes(symbol)) {
                 cells[index].innerHTML = `<img src="images/${symbol}.jpg" alt="${symbol}">`;
+            } else if (symbol === 'star') {
+                cells[index].innerHTML = '<i class="bi bi-star-fill"></i>';
+            } else if (symbol === 'fire') {
+                cells[index].innerHTML = '<i class="bi bi-fire"></i>';
+            } else if (symbol === 'lightning') {
+                cells[index].innerHTML = '<i class="bi bi-lightning-fill"></i>';
+            } else if (symbol === 'diamond') {
+                cells[index].innerHTML = '<i class="bi bi-gem"></i>';
             } else {
                 cells[index].textContent = symbol;
             }
@@ -440,9 +444,9 @@ function updateGameBoard(gameData) {
         
         let message = '';
         if (gameData.winner) {
-            message = gameData.winner === currentUser.username ? 'You won! 🎉' : `${gameData.winner} won! 😔`;
+            message = gameData.winner === currentUser.username ? 'You won!' : `${gameData.winner} won!`;
         } else if (gameData.isDraw) {
-            message = "It's a draw! 🤝";
+            message = "It's a draw!";
         }
         
         document.getElementById('gameStatus').innerHTML = message;
@@ -459,6 +463,7 @@ function updateGameBoard(gameData) {
 function showGameEndNotification(message) {
     const isWin = message.includes('You won');
     const isDraw = message.includes('draw');
+    const isLoss = message.includes('won!') && !isWin;
     
     const notification = document.createElement('div');
     notification.className = 'game-notification';
@@ -472,10 +477,14 @@ function showGameEndNotification(message) {
         bgColor = 'linear-gradient(135deg, #f39c12, #e67e22)';
         borderColor = '#f39c12';
         icon = '<i class="bi bi-hand-thumbs-up-fill"></i>';
-    } else {
+    } else if (isLoss) {
         bgColor = 'linear-gradient(135deg, #e74c3c, #c0392b)';
         borderColor = '#e74c3c';
-        icon = '<i class="bi bi-heartbreak-fill"></i>';
+        icon = '<i class="bi bi-emoji-frown-fill"></i>';
+    } else {
+        bgColor = 'linear-gradient(135deg, #6366f1, #4f46e5)';
+        borderColor = '#6366f1';
+        icon = '<i class="bi bi-info-circle-fill"></i>';
     }
     
     notification.innerHTML = `
