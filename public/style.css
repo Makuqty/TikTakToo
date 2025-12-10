@@ -1438,7 +1438,7 @@ body {
         0 0 80px rgba(99, 102, 241, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    max-width: 500px;
+    max-width: 700px;
     max-height: 90vh;
     overflow-y: auto;
     backdrop-filter: blur(40px) saturate(180%);
@@ -1479,8 +1479,8 @@ body {
 
 .symbol-choice {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.75rem;
     margin-top: 1rem;
 }
 
@@ -1497,8 +1497,8 @@ body {
 }
 
 .symbol-choice button {
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     border: 2px solid rgba(71, 85, 105, 0.3);
     border-radius: var(--radius-xl);
     background: rgba(15, 23, 42, 0.8);
@@ -1901,8 +1901,8 @@ body {
     }
 
     .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: var(--space-6);
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
     }
 
     .game-board-container {
@@ -1913,8 +1913,9 @@ body {
     }
 
     .game-board {
-        width: 350px;
-        height: 350px;
+        width: min(350px, 90vw);
+        height: min(350px, 90vw);
+        margin: 0 auto;
     }
 }
 
@@ -1928,14 +1929,14 @@ body {
     }
 
     .screen {
-        padding: var(--space-4);
+        padding: var(--space-2);
     }
 
     .auth-container {
         padding: var(--space-8) var(--space-6);
         margin: var(--space-4);
         border-radius: var(--radius-lg);
-        max-width: 90vw;
+        max-width: min(420px, 90vw);
     }
 
     .lobby-header {
@@ -1970,14 +1971,15 @@ body {
     }
 
     .game-board {
-        width: 320px;
-        height: 320px;
+        width: min(320px, 85vw);
+        height: min(320px, 85vw);
+        gap: var(--space-2);
     }
 
     .cell {
-        font-size: 2.5rem;
-        min-height: 80px;
-        min-width: 80px;
+        font-size: 2rem;
+        min-height: 70px;
+        min-width: 70px;
     }
 
     .chat-container {
@@ -1990,15 +1992,15 @@ body {
     }
 
     .symbol-choice {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: var(--space-3);
     }
 
     .symbol-choice button {
-        width: 70px;
-        height: 70px;
+        width: 100%;
+        aspect-ratio: 1;
         font-size: 1.25rem;
-        min-height: 44px;
+        min-height: 60px;
     }
 
     .modal-content {
@@ -2056,12 +2058,17 @@ body {
     :root {
         --space-6: 1rem;
         --space-8: 1.25rem;
+        --font-size-3xl: 1.25rem;
         --font-size-2xl: 1.125rem;
-        --font-size-xl: 1.125rem;
+        --font-size-xl: 1rem;
+    }
+
+    body {
+        font-size: 14px;
     }
 
     .screen {
-        padding: var(--space-2);
+        padding: 0;
     }
 
     .lobby-layout {
@@ -2151,15 +2158,16 @@ body {
     }
 
     .game-board {
-        width: 280px;
-        height: 280px;
+        width: min(280px, 90vw);
+        height: min(280px, 90vw);
+        gap: var(--space-2);
     }
 
     .cell {
-        font-size: 2rem;
-        min-height: 70px;
-        min-width: 70px;
-        border-radius: var(--radius-lg);
+        font-size: 1.75rem;
+        min-height: 60px;
+        min-width: 60px;
+        border-radius: var(--radius-md);
     }
 
     .chat-container {
@@ -2205,16 +2213,15 @@ body {
     }
 
     .symbol-choice {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: var(--space-2);
     }
 
     .symbol-choice button {
-        width: 60px;
-        height: 60px;
+        width: 100%;
+        aspect-ratio: 1;
         font-size: 1rem;
-        min-height: 44px;
-        min-width: 44px;
+        min-height: 50px;
     }
 
     .challenge-actions button {
@@ -2228,13 +2235,14 @@ body {
     }
 
     .avatar-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: var(--space-2);
     }
 
     .avatar-option {
         padding: var(--space-3);
         font-size: 1.5rem;
+        aspect-ratio: 1;
         min-height: 60px;
     }
 
@@ -2255,15 +2263,29 @@ body {
 
 /* Small Mobile (360px - 479px) */
 @media (max-width: 479px) {
+    .lobby-header {
+        padding: var(--space-3);
+        margin: var(--space-2);
+    }
+
+    .lobby-layout {
+        padding: var(--space-2);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
     .game-board {
-        width: 240px;
-        height: 240px;
+        width: min(240px, 90vw);
+        height: min(240px, 90vw);
+        gap: var(--space-1);
     }
 
     .cell {
-        font-size: 1.75rem;
-        min-height: 60px;
-        min-width: 60px;
+        font-size: 1.5rem;
+        min-height: 50px;
+        min-width: 50px;
     }
 
     .rps-btn {
@@ -2275,14 +2297,24 @@ body {
         font-size: 2rem;
     }
 
+    .symbol-choice {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .symbol-choice button {
-        width: 55px;
-        height: 55px;
+        width: 100%;
+        aspect-ratio: 1;
+        min-height: 50px;
+    }
+
+    .avatar-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .avatar-option {
         padding: var(--space-2);
         font-size: 1.25rem;
+        aspect-ratio: 1;
         min-height: 50px;
     }
 }
@@ -2293,18 +2325,19 @@ body {
         --space-4: 0.75rem;
         --space-6: 0.875rem;
         --font-size-lg: 0.95rem;
-        --font-size-base: 0.9rem;
+        --font-size-base: 0.875rem;
     }
 
     .game-board {
-        width: 200px;
-        height: 200px;
+        width: min(200px, 90vw);
+        height: min(200px, 90vw);
+        gap: 0.25rem;
     }
 
     .cell {
-        font-size: 1.5rem;
-        min-height: 50px;
-        min-width: 50px;
+        font-size: 1.25rem;
+        min-height: 40px;
+        min-width: 40px;
     }
 
     .lobby-section {
@@ -2425,4 +2458,101 @@ button:disabled {
 ::-moz-selection {
     background: rgba(99, 102, 241, 0.2);
     color: var(--text);
+}
+
+/* Mobile-Specific Enhancements */
+@media (max-width: 768px) {
+    /* Prevent zoom on input focus */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+
+    /* Improve touch scrolling */
+    .sidebar-content,
+    .chat-messages,
+    .modal-content {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Optimize modal for mobile */
+    .modal-content {
+        width: 95vw;
+        max-height: 85vh;
+    }
+
+    /* Better footer on mobile */
+    .lobby-footer {
+        padding: var(--space-3);
+        margin: var(--space-2);
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: var(--space-2);
+        text-align: center;
+    }
+
+    /* Optimize user controls */
+    .user-controls {
+        flex-wrap: wrap;
+        gap: var(--space-2);
+    }
+
+    /* Better RPS layout on mobile */
+    .rps-choices {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .rps-btn {
+        width: 100%;
+        padding: var(--space-4);
+    }
+}
+
+/* Landscape orientation optimizations */
+@media (max-height: 600px) and (orientation: landscape) {
+    .screen {
+        padding: var(--space-2);
+    }
+
+    .lobby-header {
+        padding: var(--space-3) var(--space-4);
+        margin: var(--space-2);
+    }
+
+    .game-header {
+        padding: var(--space-3) var(--space-4);
+        margin-bottom: var(--space-3);
+    }
+
+    .chat-container {
+        height: 250px;
+    }
+
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

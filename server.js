@@ -13,57 +13,28 @@ const io = socketIo(server);
 app.use(express.json());
 app.use(express.static('public'));
 
-// Use Firebase for data storage
-const useFirebase = false;
+// Initialize Firebase
+const serviceAccount = {
+  type: "service_account",
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: "https://accounts.google.com/o/oauth2/auth",
+  token_uri: "https://oauth2.googleapis.com/token",
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+  universe_domain: "googleapis.com"
+};
 
-// Initialize Firebase only if enabled
-let db, rtdb;
-if (useFirebase) {
-  const serviceAccount = {
-    type: "service_account",
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_CLIENT_ID,
-    auth_uri: "https://accounts.google.com/o/oauth2/auth",
-    token_uri: "https://oauth2.googleapis.com/token",
-    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-    client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
-    universe_domain: "googleapis.com"
-  };
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: `https://${serviceAccount.project_id}-default-rtdb.firebaseio.com/`
+});
 
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: `https://${serviceAccount.project_id}-default-rtdb.firebaseio.com/`
-  });
-
-  db = admin.firestore();
-  rtdb = admin.database();
-}
-
-const users = new Map();
-const USERS_FILE = 'users.json';
-
-// Load users for fallback if needed
-loadUsers();
-
-function loadUsers() {
-  try {
-    if (require('fs').existsSync(USERS_FILE)) {
-      const data = require('fs').readFileSync(USERS_FILE, 'utf8');
-      const usersArray = JSON.parse(data);
-      usersArray.forEach(user => users.set(user.username, user));
-    }
-  } catch (error) {
-    console.log('Starting with empty users');
-  }
-}
-
-function saveUsers() {
-  const usersArray = Array.from(users.values());
-  require('fs').writeFileSync(USERS_FILE, JSON.stringify(usersArray, null, 2));
-}
+const db = admin.firestore();
+const rtdb = admin.database();
 
 const onlineUsers = new Map();
 const gameRooms = new Map();
@@ -71,36 +42,27 @@ const challenges = new Map();
 const matchmakingQueue = new Set();
 const pendingMatches = new Map();
 
-const JWT_SECRET = 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Auth routes
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (useFirebase) {
-      const userRef = db.collection('users').doc(username);
-      const userDoc = await userRef.get();
-      if (userDoc.exists) {
-        return res.status(400).json({ error: 'Username already exists' });
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await userRef.set({
-        username,
-        password: hashedPassword,
-        wins: 0,
-        losses: 0,
-        draws: 0,
-        avatar: null
-      });
-    } else {
-      if (users.has(username)) {
-        return res.status(400).json({ error: 'Username already exists' });
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      users.set(username, { username, password: hashedPassword, wins: 0, losses: 0, draws: 0 });
-      saveUsers();
+    const userRef = db.collection('users').doc(username);
+    const userDoc = await userRef.get();
+    if (userDoc.exists) {
+      return res.status(400).json({ error: 'Username already exists' });
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await userRef.set({
+      username,
+      password: hashedPassword,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      avatar: null
+    });
 
     res.json({ message: 'User registered successfully' });
   } catch (error) {
@@ -112,18 +74,13 @@ app.post('/api/login', async (req, res) => {
    try {
      const { username, password } = req.body;
 
-     let user;
-     if (useFirebase) {
-       const userDoc = await db.collection('users').doc(username).get();
-       if (!userDoc.exists) {
-         return res.status(401).json({ error: 'Invalid credentials' });
-       }
-       user = userDoc.data();
-     } else {
-       user = users.get(username);
+     const userDoc = await db.collection('users').doc(username).get();
+     if (!userDoc.exists) {
+       return res.status(401).json({ error: 'Invalid credentials' });
      }
+     const user = userDoc.data();
 
-     if (!user || !await bcrypt.compare(password, user.password)) {
+     if (!await bcrypt.compare(password, user.password)) {
        return res.status(401).json({ error: 'Invalid credentials' });
      }
 
@@ -136,19 +93,11 @@ app.post('/api/login', async (req, res) => {
 
 app.get('/api/leaderboard', async (req, res) => {
   try {
-    let leaderboard;
-    if (useFirebase) {
-      const usersSnapshot = await db.collection('users').orderBy('wins', 'desc').limit(5).get();
-      leaderboard = usersSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return { username: data.username, wins: data.wins, losses: data.losses, draws: data.draws };
-      });
-    } else {
-      leaderboard = Array.from(users.values())
-        .sort((a, b) => b.wins - a.wins)
-        .slice(0, 5)
-        .map(({ username, wins, losses, draws }) => ({ username, wins, losses, draws }));
-    }
+    const usersSnapshot = await db.collection('users').orderBy('wins', 'desc').limit(5).get();
+    const leaderboard = usersSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return { username: data.username, wins: data.wins, losses: data.losses, draws: data.draws };
+    });
     res.json(leaderboard);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch leaderboard' });
@@ -160,16 +109,9 @@ io.on('connection', (socket) => {
   socket.on('authenticate', async (token) => {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
-      let user;
-      if (useFirebase) {
-        const userDoc = await db.collection('users').doc(decoded.username).get();
-        if (userDoc.exists) {
-          user = userDoc.data();
-        }
-      } else {
-        user = users.get(decoded.username);
-      }
-      if (user) {
+      const userDoc = await db.collection('users').doc(decoded.username).get();
+      if (userDoc.exists) {
+        const user = userDoc.data();
         socket.username = decoded.username;
         onlineUsers.set(socket.id, { username: decoded.username, socketId: socket.id });
         socket.emit('authenticated', user);
@@ -324,28 +266,12 @@ io.on('connection', (socket) => {
           room.lastWinner = winner;
           room.lastLoser = loser;
 
-          if (useFirebase) {
-            await db.collection('users').doc(winner).update({ wins: admin.firestore.FieldValue.increment(1) });
-            await db.collection('users').doc(loser).update({ losses: admin.firestore.FieldValue.increment(1) });
-          } else {
-            const winnerUser = users.get(winner);
-            const loserUser = users.get(loser);
-            if (winnerUser) winnerUser.wins++;
-            if (loserUser) loserUser.losses++;
-            saveUsers();
-          }
+          await db.collection('users').doc(winner).update({ wins: admin.firestore.FieldValue.increment(1) });
+          await db.collection('users').doc(loser).update({ losses: admin.firestore.FieldValue.increment(1) });
         } else {
-          if (useFirebase) {
-            await Promise.all(Object.keys(room.players).map(player =>
-              db.collection('users').doc(player).update({ draws: admin.firestore.FieldValue.increment(1) })
-            ));
-          } else {
-            Object.keys(room.players).forEach(player => {
-              const user = users.get(player);
-              if (user) user.draws++;
-            });
-            saveUsers();
-          }
+          await Promise.all(Object.keys(room.players).map(player =>
+            db.collection('users').doc(player).update({ draws: admin.firestore.FieldValue.increment(1) })
+          ));
         }
       } else {
         room.currentPlayer = Object.keys(room.players).find(p => p !== socket.username);
@@ -460,15 +386,7 @@ io.on('connection', (socket) => {
   socket.on('updateAvatar', async (avatar) => {
     if (socket.username) {
       try {
-        if (useFirebase) {
-          await db.collection('users').doc(socket.username).update({ avatar });
-        } else {
-          const user = users.get(socket.username);
-          if (user) {
-            user.avatar = avatar;
-            saveUsers();
-          }
-        }
+        await db.collection('users').doc(socket.username).update({ avatar });
         socket.emit('avatarUpdated', avatar);
       } catch (error) {
         socket.emit('error', 'Failed to update avatar');
@@ -627,31 +545,14 @@ async function startMoveTimer(roomId) {
         if (winner || isDraw) {
           room.gameState = winner ? 'finished' : 'draw';
           if (winner) {
-            if (useFirebase) {
-              await db.collection('users').doc(winner).update({ wins: admin.firestore.FieldValue.increment(1) });
-              const loser = Object.keys(room.players).find(p => p !== winner);
-              await db.collection('users').doc(loser).update({ losses: admin.firestore.FieldValue.increment(1) });
-            } else {
-              const winnerUser = users.get(winner);
-              const loser = Object.keys(room.players).find(p => p !== winner);
-              const loserUser = users.get(loser);
-              if (winnerUser) winnerUser.wins++;
-              if (loserUser) loserUser.losses++;
-              saveUsers();
-            }
+            await db.collection('users').doc(winner).update({ wins: admin.firestore.FieldValue.increment(1) });
+            const loser = Object.keys(room.players).find(p => p !== winner);
+            await db.collection('users').doc(loser).update({ losses: admin.firestore.FieldValue.increment(1) });
             room.lastWinner = winner;
           } else {
-            if (useFirebase) {
-              await Promise.all(Object.keys(room.players).map(player =>
-                db.collection('users').doc(player).update({ draws: admin.firestore.FieldValue.increment(1) })
-              ));
-            } else {
-              Object.keys(room.players).forEach(player => {
-                const user = users.get(player);
-                if (user) user.draws++;
-              });
-              saveUsers();
-            }
+            await Promise.all(Object.keys(room.players).map(player =>
+              db.collection('users').doc(player).update({ draws: admin.firestore.FieldValue.increment(1) })
+            ));
           }
         } else {
           room.currentPlayer = Object.keys(room.players).find(p => p !== room.currentPlayer);
