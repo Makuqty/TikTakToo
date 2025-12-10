@@ -161,17 +161,18 @@ body {
 
 /* Auth Screen */
 .auth-container {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(30, 41, 59, 0.4);
     border-radius: var(--radius-xl);
     padding: var(--space-12);
     width: 100%;
     max-width: 420px;
     box-shadow:
         var(--shadow-2xl),
-        0 0 40px rgba(99, 102, 241, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    backdrop-filter: blur(20px);
+        0 0 60px rgba(99, 102, 241, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
     position: relative;
     overflow: hidden;
 }
@@ -331,7 +332,6 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: var(--surface);
 }
 
 .lobby-header {
@@ -339,13 +339,14 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: var(--space-6) var(--space-8);
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f172a 100%);
-    border-bottom: 2px solid rgba(99, 102, 241, 0.3);
-    box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.1);
+    background: rgba(26, 26, 46, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-lg), 0 0 40px rgba(99, 102, 241, 0.2), 0 8px 32px rgba(0, 0, 0, 0.3);
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
 }
 
 .lobby-footer {
@@ -449,12 +450,13 @@ body {
 }
 
 .dashboard-section {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
     border-radius: var(--radius-xl);
     padding: var(--space-8);
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    backdrop-filter: blur(20px);
-    box-shadow: var(--shadow-xl), 0 0 40px rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 60px rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .players-section {
@@ -499,11 +501,12 @@ body {
 
 /* Sidebar Styling */
 .sidebar-section {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(30, 41, 59, 0.4);
     border-radius: var(--radius-xl);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    backdrop-filter: blur(20px);
-    box-shadow: var(--shadow-xl), 0 0 40px rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     overflow: hidden;
 }
 
@@ -526,16 +529,7 @@ body {
 
 .sidebar-content {
     padding: var(--space-4);
-    max-height: 400px;
     overflow-y: auto;
-}
-
-.players-section .sidebar-content {
-    max-height: 300px;
-}
-
-.leaderboard-section .sidebar-content {
-    max-height: 350px;
 }
 
 /* Dashboard Grid */
@@ -546,17 +540,23 @@ body {
 }
 
 .dashboard-card {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(30, 41, 59, 0.4);
     border-radius: var(--radius-xl);
     padding: var(--space-6);
     box-shadow:
-        var(--shadow-xl),
-        0 0 40px rgba(99, 102, 241, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    backdrop-filter: blur(20px);
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
     position: relative;
     overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .dashboard-card::before {
@@ -910,16 +910,17 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(30, 41, 59, 0.4);
     border-radius: var(--radius-xl);
     padding: var(--space-6) var(--space-8);
     margin-bottom: var(--space-8);
     box-shadow:
-        var(--shadow-xl),
-        0 0 40px rgba(99, 102, 241, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    backdrop-filter: blur(20px);
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(99, 102, 241, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
     position: relative;
     overflow: hidden;
 }
@@ -1059,8 +1060,8 @@ body {
 }
 
 .cell {
-    background: rgba(30, 41, 59, 0.95);
-    border: 2px solid rgba(71, 85, 105, 0.3);
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-xl);
     font-size: 2.5rem;
     font-weight: var(--font-weight-bold);
@@ -1069,15 +1070,16 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
     width: 100%;
     height: 100%;
     min-width: 0;
     min-height: 0;
     box-sizing: border-box;
     box-shadow:
-        var(--shadow-md),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     position: relative;
     overflow: hidden;
 }
@@ -1099,11 +1101,11 @@ body {
 }
 
 .cell:hover:not(:disabled) {
-    border-color: var(--primary);
-    background: rgba(30, 41, 59, 1);
+    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(30, 41, 59, 0.6);
     box-shadow:
-        var(--shadow-lg),
-        var(--glow-primary),
+        0 8px 24px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(99, 102, 241, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: translateY(-2px) scale(1.02);
 }
@@ -1149,19 +1151,19 @@ body {
 }
 
 .chat-container {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(30, 41, 59, 0.4);
     border-radius: var(--radius-xl);
     padding: var(--space-6);
     display: flex;
     flex-direction: column;
     height: 400px;
     box-shadow:
-        var(--shadow-xl),
-        0 0 40px rgba(99, 102, 241, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(71, 85, 105, 0.3);
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
     overflow: hidden;
 }
 
@@ -1396,19 +1398,20 @@ body {
 }
 
 .modal-content {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(30, 41, 59, 0.5);
     border-radius: var(--radius-2xl);
     padding: var(--space-10);
     text-align: center;
     box-shadow:
-        var(--shadow-2xl),
-        0 0 60px rgba(99, 102, 241, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(71, 85, 105, 0.3);
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 80px rgba(99, 102, 241, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
     animation: modalSlideIn 0.4s ease-out;
     position: relative;
     overflow: hidden;

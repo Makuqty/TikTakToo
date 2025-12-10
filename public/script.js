@@ -448,11 +448,6 @@ function updateGameBoard(gameData) {
         }
         
         document.getElementById('gameStatus').innerHTML = message;
-        
-        // Delay notification to let move animation complete
-        setTimeout(() => {
-            showGameEndNotification(message);
-        }, 300);
         document.getElementById('rematchBtn').style.display = 'inline-block';
     }
 }
@@ -501,7 +496,7 @@ function showGameEndNotification(message) {
         backdrop-filter: blur(15px);
         border: 3px solid ${borderColor};
         box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 20px ${borderColor}40;
-        animation: gameEndPop 4s ease-in-out forwards;
+        animation: gameEndPop 2s ease-in-out forwards;
         min-width: 300px;
     `;
     
@@ -554,7 +549,7 @@ function showGameEndNotification(message) {
         if (document.body.contains(notification)) {
             document.body.removeChild(notification);
         }
-    }, 4000);
+    }, 2000);
 }
 
 
@@ -706,12 +701,9 @@ document.addEventListener('mousedown', () => {
 
 // Profile functions
 function showProfile() {
-    const avatar = currentUser.avatar || 'controller';
     const totalGames = currentUser.wins + currentUser.losses + currentUser.draws;
     const winRate = totalGames > 0 ? Math.round((currentUser.wins / totalGames) * 100) : 0;
     
-    const iconClass = getAvatarIcon(avatar);
-    document.getElementById('profileAvatar').innerHTML = `<i class="bi ${iconClass}"></i>`;
     document.getElementById('profileUsername').textContent = currentUser.username;
     document.getElementById('profileWins').textContent = currentUser.wins;
     document.getElementById('profileLosses').textContent = currentUser.losses;
