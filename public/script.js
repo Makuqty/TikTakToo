@@ -281,6 +281,19 @@ socket.on('messageReceived', (messageData) => {
     addChatMessage(messageData);
 });
 
+// Typing indicator events
+socket.on('userStartedTyping', (data) => {
+    if (data.username !== currentUser.username) {
+        showTypingIndicator(data.username);
+    }
+});
+
+socket.on('userStoppedTyping', (data) => {
+    if (data.username !== currentUser.username) {
+        removeTypingIndicator();
+    }
+});
+
 socket.on('rematchRequested', (requester) => {
     console.log('Rematch requested by:', requester);
     const modal = document.getElementById('rematchRequestModal');
@@ -478,6 +491,13 @@ function initializeGame(gameData) {
     
     updateGameStatus(gameData.currentPlayer);
     document.getElementById('chatMessages').innerHTML = '';
+    
+    // Update chat header with opponent name
+    const players = Object.keys(gameData.players);
+    const opponent = players.find(p => p !== currentUser.username);
+    if (opponent) {
+        document.getElementById('opponentName').textContent = opponent;
+    }
 }
 
 function updateGameStatus(currentPlayer) {
@@ -677,22 +697,129 @@ function sendMessage() {
     const message = input.value.trim();
     
     if (message && currentRoom) {
+        // Add sending animation
+        const sendBtn = document.querySelector('.chat-input button:last-child');
+        sendBtn.style.transform = 'scale(0.9)';
+        sendBtn.style.background = 'linear-gradient(135deg, var(--secondary), var(--secondary-dark))';
+        
         socket.emit('sendMessage', { roomId: currentRoom, message });
         input.value = '';
         document.getElementById('emotePicker').classList.add('hidden');
+        
+        // Reset send button
+        setTimeout(() => {
+            sendBtn.style.transform = '';
+            sendBtn.style.background = '';
+        }, 150);
+        
+        // Stop typing indicator
+        clearTimeout(typingTimeout);
+        if (isTyping) {
+            socket.emit('stopTyping', { roomId: currentRoom });
+            isTyping = false;
+        }
+    }
+}
+
+// Typing indicator functionality
+let typingTimeout;
+let isTyping = false;
+
+function handleTyping() {
+    if (!currentRoom) return;
+    
+    if (!isTyping) {
+        isTyping = true;
+        socket.emit('startTyping', { roomId: currentRoom });
+    }
+    
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+        if (isTyping) {
+            socket.emit('stopTyping', { roomId: currentRoom });
+            isTyping = false;
+        }
+    }, 2000);
+}
+
+function showTypingIndicator(username) {
+    removeTypingIndicator();
+    
+    const container = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message other typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    
+    typingDiv.innerHTML = `
+        <div class="message-bubble typing-bubble">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="message-sender">${username} is typing...</div>
+    `;
+    
+    container.appendChild(typingDiv);
+    container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+    });
+}
+
+function removeTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) {
+        indicator.remove();
     }
 }
 
 function toggleEmotePicker() {
     const picker = document.getElementById('emotePicker');
-    picker.classList.toggle('hidden');
+    const isHidden = picker.classList.contains('hidden');
+    
+    if (isHidden) {
+        picker.classList.remove('hidden');
+        // Add click outside to close
+        setTimeout(() => {
+            document.addEventListener('click', closeEmotePickerOutside);
+        }, 100);
+    } else {
+        picker.classList.add('hidden');
+        document.removeEventListener('click', closeEmotePickerOutside);
+    }
+}
+
+function closeEmotePickerOutside(event) {
+    const picker = document.getElementById('emotePicker');
+    const emoteBtn = document.querySelector('.emote-btn');
+    
+    if (!picker.contains(event.target) && !emoteBtn.contains(event.target)) {
+        picker.classList.add('hidden');
+        document.removeEventListener('click', closeEmotePickerOutside);
+    }
 }
 
 function addEmote(emote) {
     const input = document.getElementById('messageInput');
-    input.value += emote;
+    const currentValue = input.value;
+    const cursorPos = input.selectionStart;
+    
+    // Insert emote at cursor position
+    const newValue = currentValue.slice(0, cursorPos) + emote + ' ' + currentValue.slice(cursorPos);
+    input.value = newValue;
+    
+    // Set cursor position after the emote
+    const newCursorPos = cursorPos + emote.length + 1;
+    input.setSelectionRange(newCursorPos, newCursorPos);
+    
     input.focus();
     document.getElementById('emotePicker').classList.add('hidden');
+    document.removeEventListener('click', closeEmotePickerOutside);
+    
+    // Trigger typing indicator
+    handleTyping();
 }
 
 function addChatMessage(messageData) {
@@ -700,17 +827,98 @@ function addChatMessage(messageData) {
     const messageDiv = document.createElement('div');
     const isOwnMessage = messageData.username === currentUser.username;
     
+    // Remove typing indicator if it exists
+    removeTypingIndicator();
+    
     messageDiv.className = `message ${isOwnMessage ? 'own' : 'other'}`;
+    
+    // Process emotes in message
+    const processedMessage = processEmotes(messageData.message);
+    
     messageDiv.innerHTML = `
-        <div class="message-bubble">
-            <div class="message-text">${messageData.message}</div>
+        <div class="message-bubble" data-message-id="${Date.now()}">
+            <div class="message-text">${processedMessage}</div>
             <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
         </div>
         ${!isOwnMessage ? `<div class="message-sender">${messageData.username}</div>` : ''}
     `;
     
     container.appendChild(messageDiv);
-    container.scrollTop = container.scrollHeight;
+    
+    // Smooth scroll to bottom with animation
+    setTimeout(() => {
+        container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
+        });
+    }, 100);
+    
+    // Add message sound effect (optional)
+    if (!isOwnMessage) {
+        playMessageSound();
+    }
+    
+    // Auto-remove old messages if too many (keep last 50)
+    const messages = container.querySelectorAll('.message');
+    if (messages.length > 50) {
+        messages[0].style.animation = 'messageSlideOut 0.3s ease-in forwards';
+        setTimeout(() => {
+            if (messages[0].parentNode) {
+                messages[0].remove();
+            }
+        }, 300);
+    }
+}
+
+// Process emotes in messages
+function processEmotes(message) {
+    const emoteMap = {
+        ':smile:': '<i class="bi bi-emoji-smile" style="color: #fbbf24;"></i>',
+        ':laugh:': '<i class="bi bi-emoji-laughing" style="color: #fbbf24;"></i>',
+        ':cool:': '<i class="bi bi-emoji-sunglasses" style="color: #3b82f6;"></i>',
+        ':love:': '<i class="bi bi-emoji-heart-eyes" style="color: #ef4444;"></i>',
+        ':think:': '<i class="bi bi-emoji-thinking" style="color: #8b5cf6;"></i>',
+        ':sad:': '<i class="bi bi-emoji-frown" style="color: #6b7280;"></i>',
+        ':angry:': '<i class="bi bi-emoji-angry" style="color: #ef4444;"></i>',
+        ':thumbsup:': '<i class="bi bi-hand-thumbs-up" style="color: #10b981;"></i>',
+        ':thumbsdown:': '<i class="bi bi-hand-thumbs-down" style="color: #ef4444;"></i>',
+        ':heart:': '<i class="bi bi-heart-fill" style="color: #ef4444;"></i>',
+        ':fire:': '<i class="bi bi-fire" style="color: #f97316;"></i>',
+        ':star:': '<i class="bi bi-star-fill" style="color: #fbbf24;"></i>'
+    };
+    
+    let processedMessage = message;
+    Object.keys(emoteMap).forEach(emote => {
+        const regex = new RegExp(emote.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        processedMessage = processedMessage.replace(regex, emoteMap[emote]);
+    });
+    
+    return processedMessage;
+}
+
+// Play message sound (subtle)
+function playMessageSound() {
+    // Create a subtle notification sound using Web Audio API
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (e) {
+        // Fallback: no sound if Web Audio API is not supported
+    }
 }
 
 function requestRematch() {
@@ -751,11 +959,35 @@ function leaveGame() {
     loadLeaderboard();
 }
 
-// Enter key support for chat and better mobile handling
+// Enhanced chat input handling
 document.getElementById('messageInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
+    }
+});
+
+// Typing indicator
+document.getElementById('messageInput').addEventListener('input', handleTyping);
+
+// Auto-resize input (if needed for multiline)
+document.getElementById('messageInput').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+
+// Focus management
+document.getElementById('messageInput').addEventListener('focus', function() {
+    this.parentElement.classList.add('focused');
+});
+
+document.getElementById('messageInput').addEventListener('blur', function() {
+    this.parentElement.classList.remove('focused');
+    // Stop typing indicator when input loses focus
+    clearTimeout(typingTimeout);
+    if (isTyping) {
+        socket.emit('stopTyping', { roomId: currentRoom });
+        isTyping = false;
     }
 });
 

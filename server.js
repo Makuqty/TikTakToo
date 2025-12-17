@@ -303,6 +303,34 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('startTyping', ({ roomId }) => {
+    const room = gameRooms.get(roomId);
+    if (room && room.players[socket.username]) {
+      // Notify other player that this user started typing
+      Object.values(room.players).forEach(player => {
+        if (player.socketId !== socket.id) {
+          io.to(player.socketId).emit('userStartedTyping', {
+            username: socket.username
+          });
+        }
+      });
+    }
+  });
+
+  socket.on('stopTyping', ({ roomId }) => {
+    const room = gameRooms.get(roomId);
+    if (room && room.players[socket.username]) {
+      // Notify other player that this user stopped typing
+      Object.values(room.players).forEach(player => {
+        if (player.socketId !== socket.id) {
+          io.to(player.socketId).emit('userStoppedTyping', {
+            username: socket.username
+          });
+        }
+      });
+    }
+  });
+
   socket.on('requestRematch', ({ roomId }) => {
     const room = gameRooms.get(roomId);
     if (room && room.players[socket.username]) {
